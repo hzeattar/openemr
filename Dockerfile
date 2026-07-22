@@ -6,4 +6,9 @@ FROM openemr/openemr:8.2.0
 ENV PORT=80
 EXPOSE 80
 
-# Keep the official image entrypoint/CMD so automatic installation and upgrades work.
+# Railway persistent volumes are empty bind mounts. Seed the official OpenEMR
+# sites skeleton before the upstream startup script performs first-time setup.
+COPY railway-entrypoint.sh /usr/local/bin/railway-entrypoint.sh
+RUN chmod 755 /usr/local/bin/railway-entrypoint.sh
+
+CMD ["/usr/local/bin/railway-entrypoint.sh"]
