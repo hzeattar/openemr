@@ -9,6 +9,6 @@
     "healthcheckTimeout": 600,
     "restartPolicyType": "ALWAYS",
     "restartPolicyMaxRetries": 10,
-    "drainingSeconds": "15"
+    "drainingSeconds": 15
   }
 }
