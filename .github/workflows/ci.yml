@@ -41,19 +41,39 @@ jobs:
           grep -Fq 'No protected response is cached' customizations/pwa/service-worker.js
 
       - name: Guard deployment files against committed secrets
+        shell: python
         run: |
-          targets=(
-            Dockerfile
-            railway-entrypoint.sh
-            railway.json
-            .env.railway.example
-            acknowledge_license_cert.html
-            customizations
-            ops
+          import pathlib
+          import re
+          import sys
+
+          roots = [
+              pathlib.Path('Dockerfile'),
+              pathlib.Path('railway-entrypoint.sh'),
+              pathlib.Path('railway.json'),
+              pathlib.Path('.env.railway.example'),
+              pathlib.Path('acknowledge_license_cert.html'),
+              pathlib.Path('customizations'),
+              pathlib.Path('ops'),
+          ]
+          pattern = re.compile(
+              r'\b(?:MYSQL_PASS|MYSQL_ROOT_PASS|OE_PASS|API_KEY|SECRET_KEY)'
+              r'\s*=\s*["\'](?!\$\{|\$\{\{)([^"\']+)["\']'
           )
-          if grep -RInE --exclude='*.md' \
-            '(MYSQL_PASS|MYSQL_ROOT_PASS|OE_PASS|API_KEY|SECRET_KEY)[[:space:]]*=[[:space:]]*["'"'][^$][^"'"']+' \
-            "${targets[@]}"; then
-            echo 'Potential hard-coded secret detected in deployment-owned files.' >&2
-            exit 1
-          fi
+          findings = []
+          for root in roots:
+              paths = [root] if root.is_file() else root.rglob('*')
+              for path in paths:
+                  if not path.is_file() or path.suffix.lower() == '.md':
+                      continue
+                  try:
+                      text = path.read_text(encoding='utf-8')
+                  except UnicodeDecodeError:
+                      continue
+                  if pattern.search(text):
+                      findings.append(str(path))
+
+          if findings:
+              print('Potential hard-coded secret detected in deployment-owned files:')
+              print('\n'.join(sorted(set(findings))))
+              sys.exit(1)
