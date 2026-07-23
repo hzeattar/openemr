@@ -1,0 +1,49 @@
+name: Validate production foundation
+
+on:
+  pull_request:
+  push:
+    branches: [master]
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Validate shell syntax
+        run: |
+          bash -n railway-entrypoint.sh
+          bash -n ops/production-readiness.sh
+          for script in ops/backup/*.sh; do
+            bash -n "$script"
+          done
+
+      - name: Validate JSON files
+        run: |
+          python -m json.tool railway.json >/dev/null
+          python -m json.tool customizations/pwa/manifest.webmanifest >/dev/null
+
+      - name: Validate required production files
+        run: |
+          test -s customizations/login/base.html.twig
+          test -s customizations/login/vertical_band.html.twig
+          test -s customizations/apache/security.conf
+          test -s customizations/pwa/service-worker.js
+          test -s customizations/pwa/clinic-icon.svg
+          grep -Fq 'FROM openemr/openemr:8.2.0' Dockerfile
+          grep -Fq 'healthcheckPath' railway.json
+          grep -Fq 'No protected response is cached' customizations/pwa/service-worker.js
+
+      - name: Guard against committed secrets
+        run: |
+          if grep -RInE --exclude-dir=.git --exclude='*.md' \
+            '(MYSQL_PASS|MYSQL_ROOT_PASS|OE_PASS|API_KEY|SECRET_KEY)[[:space:]]*=[[:space:]]*["'"'][^$][^"'"']+' .; then
+            echo 'Potential hard-coded secret detected.' >&2
+            exit 1
+          fi
