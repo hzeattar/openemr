@@ -1,6 +1,6 @@
 # OpenEMR on Railway
 
-This repository is configured to deploy OpenEMR from the official stable production Docker image.
+This repository deploys OpenEMR from the official stable production Docker image.
 
 ## Required Railway services
 
@@ -12,7 +12,7 @@ This repository is configured to deploy OpenEMR from the official stable product
 /var/www/localhost/htdocs/openemr/sites
 ```
 
-The volume is required to preserve site configuration and uploaded patient documents across redeployments.
+The volume preserves site configuration and uploaded patient documents across redeployments. Railway bind mounts start empty, so `railway-entrypoint.sh` safely overlays the official `/swarm-pieces/sites` skeleton only while OpenEMR is unconfigured. It never uses `rsync --delete` and does not replace an installed site.
 
 ## OpenEMR service variables
 
@@ -28,27 +28,43 @@ MYSQL_USER=${{MySQL.MYSQLUSER}}
 MYSQL_PASS=${{MySQL.MYSQLPASSWORD}}
 MYSQL_DATABASE=${{MySQL.MYSQLDATABASE}}
 OE_USER=admin
+OE_USER_NAME=Administrator
 OE_PASS=CHANGE_THIS_TO_A_STRONG_PRIVATE_PASSWORD
+MANUAL_SETUP=no
 OPENEMR_SETTING_rest_api=1
+RAILWAY_HEALTHCHECK_TIMEOUT_SEC=900
 ```
 
-Keep `OE_PASS` private and seal it in Railway after the first successful deployment.
+Confirm the actual variable names exposed by the MySQL service before applying the references. In particular, do not assume the service user is `root`; `MYSQL_ROOT_USER` must be an account that can perform the initial database setup.
+
+Keep `OE_PASS` private and seal it in Railway after the first successful deployment. Do not set `SWARM_MODE=yes` for this single-replica Railway deployment; the custom entrypoint already handles the empty bind-mounted volume.
 
 ## Networking
 
-Generate a public Railway domain for the OpenEMR service and set the target port to `80` if Railway does not detect it automatically.
+Generate a public Railway domain for the OpenEMR service and set the target port to `80`. Do not set a custom build command or start command; Railway should use the root `Dockerfile` and its `CMD`.
 
-Do not set a custom build command or start command. Railway should detect the root `Dockerfile` and use the official image startup command.
+The deployment healthcheck is a static Apache endpoint:
+
+```text
+/railway-health
+```
+
+It must return HTTP `200` with body `ok`. This endpoint deliberately avoids the database-backed OpenEMR readiness route, while Apache still starts only after the upstream setup script has completed.
 
 ## First deployment
 
-The first deployment performs the OpenEMR database installation automatically. It can take several minutes. The readiness endpoint is:
+The first deployment performs the OpenEMR database installation automatically and may take several minutes. In deploy logs, verify this sequence:
 
 ```text
-/meta/health/readyz
+Waiting for MySQL...
+MySQL is ready!
+Running quick setup!
+OpenEMR configured successfully
+Setup Complete!
+Starting Apache!
 ```
 
-After deployment, log in with the values of `OE_USER` and `OE_PASS`.
+After deployment, log in with `OE_USER` and `OE_PASS`.
 
 ## Create a normal user
 
