@@ -1,0 +1,41 @@
+name: Production smoke monitor
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '17 * * * *'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: openemr-production-smoke
+  cancel-in-progress: true
+
+jobs:
+  smoke:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    env:
+      BASE_URL: https://openemr-production-381f.up.railway.app
+    steps:
+      - name: Health endpoint
+        run: |
+          body="$(curl --fail --silent --show-error --location \
+            --retry 3 --retry-delay 5 --max-time 25 \
+            "$BASE_URL/railway-health")"
+          test "$body" = 'ok'
+
+      - name: Login page
+        run: |
+          curl --fail --silent --show-error --location \
+            --retry 3 --retry-delay 5 --max-time 30 \
+            "$BASE_URL/interface/login/login.php?site=default" \
+            | grep -Fq 'login_form'
+
+      - name: Project information page
+        run: |
+          curl --fail --silent --show-error --location \
+            --retry 3 --retry-delay 5 --max-time 30 \
+            "$BASE_URL/acknowledge_license_cert.html" \
+            | grep -Fq 'Hesham Talaat'
