@@ -1,40 +1,62 @@
 #!/usr/bin/env bash
-set -euo pipefail
+set -Eeuo pipefail
+umask 027
 
 OE_ROOT="/var/www/localhost/htdocs/openemr"
 SITES_DIR="${OE_ROOT}/sites"
 SQLCONF_FILE="${SITES_DIR}/default/sqlconf.php"
 SEED_DIR="/swarm-pieces/sites"
+UPSTREAM_ENTRYPOINT="${OE_ROOT}/openemr.sh"
 
-config_state="0"
-if [[ -f "${SQLCONF_FILE}" ]]; then
-  config_state=$(php -r "require '${SQLCONF_FILE}'; echo isset(\$config) && \$config ? 1 : 0;" 2>/dev/null | tail -1 || echo 0)
+is_configured() {
+  php -r "if (is_file('${SQLCONF_FILE}')) { require '${SQLCONF_FILE}'; echo isset(\$config) && \$config ? 1 : 0; } else { echo 0; }" \
+    2>/dev/null | tail -n 1
+}
+
+if [[ ! -d "${SEED_DIR}/default" ]]; then
+  echo "[railway-init] ERROR: OpenEMR seed directory was not found at ${SEED_DIR}" >&2
+  exit 1
 fi
+
+if [[ ! -f /root/docker-version ]]; then
+  echo "[railway-init] ERROR: OpenEMR docker version marker is missing" >&2
+  exit 1
+fi
+
+if [[ ! -x "${UPSTREAM_ENTRYPOINT}" ]]; then
+  echo "[railway-init] ERROR: Upstream OpenEMR entrypoint is missing or not executable" >&2
+  exit 1
+fi
+
+config_state="$(is_configured || true)"
 
 # Railway volumes are bind-mounted empty and, unlike Docker named volumes,
 # do not automatically receive the image's pre-populated /sites contents.
-# Seed only while OpenEMR is still unconfigured; never overwrite an installed site.
+# Overlay the official seed only while OpenEMR is unconfigured. No --delete is
+# used, so files that do not belong to the seed (including uploaded documents)
+# are not removed if this is recovering from an interrupted first installation.
 if [[ "${config_state}" != "1" ]]; then
   echo "[railway-init] OpenEMR is not configured; preparing persistent sites volume..."
   mkdir -p "${SITES_DIR}"
 
-  if [[ -d "${SEED_DIR}/default" ]]; then
-    rsync --archive --links "${SEED_DIR}/" "${SITES_DIR}/"
-  else
-    echo "[railway-init] ERROR: OpenEMR seed directory was not found at ${SEED_DIR}" >&2
-    exit 1
-  fi
+  # Remove only orchestration markers from an interrupted setup. Never remove
+  # sqlconf.php, documents, or any site data.
+  rm -f "${SITES_DIR}/docker-leader" \
+        "${SITES_DIR}/docker-initiated" \
+        "${SITES_DIR}/docker-completed"
 
-  # Prevent the official startup script from treating a brand-new empty
-  # Railway volume as an old installation that requires an upgrade.
-  if [[ -f /root/docker-version ]]; then
-    mkdir -p "${SITES_DIR}/default"
-    cp /root/docker-version "${SITES_DIR}/default/docker-version"
-  fi
+  rsync --archive --links "${SEED_DIR}/" "${SITES_DIR}/"
+
+  # A fresh Railway volume otherwise looks like version 0 to the upstream
+  # upgrade detector. Match the image version before first-time auto setup.
+  mkdir -p "${SITES_DIR}/default"
+  cp /root/docker-version "${SITES_DIR}/default/docker-version"
 
   chown -R apache:apache "${SITES_DIR}"
   echo "[railway-init] Persistent sites volume is ready for first installation."
+else
+  echo "[railway-init] Existing OpenEMR configuration detected; preserving persistent sites volume."
 fi
 
 cd "${OE_ROOT}"
-exec ./openemr.sh
+exec "${UPSTREAM_ENTRYPOINT}"
