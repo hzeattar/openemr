@@ -1,492 +1,594 @@
-<!DOCTYPE html>
-<html>
-
+<!doctype html>
+<html lang="en" dir="ltr">
 <head>
-    <title>Acknowledgments, Licensing and Certification</title>
-    <link href="public/assets/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#07111f">
+  <meta name="description" content="Project engineering and deployment profile for Engineer Hesham Talaat.">
+  <title>Engineer Hesham Talaat | Project Engineering</title>
+  <style>
+    :root {
+      --bg: #07111f;
+      --bg-soft: #0c192a;
+      --card: rgba(14, 31, 51, 0.78);
+      --card-strong: rgba(17, 38, 62, 0.96);
+      --line: rgba(148, 163, 184, 0.2);
+      --text: #edf6ff;
+      --muted: #9fb3c8;
+      --accent: #2dd4bf;
+      --accent-2: #38bdf8;
+      --accent-3: #a78bfa;
+      --success: #86efac;
+      --shadow: 0 24px 70px rgba(0, 0, 0, 0.38);
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      color: var(--text);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont,
+                   "Segoe UI", Arial, "Noto Sans Arabic", sans-serif;
+      background:
+        radial-gradient(circle at 12% 18%, rgba(45, 212, 191, 0.16), transparent 28rem),
+        radial-gradient(circle at 88% 15%, rgba(56, 189, 248, 0.16), transparent 28rem),
+        radial-gradient(circle at 72% 78%, rgba(167, 139, 250, 0.12), transparent 25rem),
+        linear-gradient(145deg, #050b14 0%, var(--bg) 48%, #071523 100%);
+      overflow-x: hidden;
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      opacity: 0.18;
+      background-image:
+        linear-gradient(rgba(255,255,255,.035) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,.035) 1px, transparent 1px);
+      background-size: 38px 38px;
+      mask-image: linear-gradient(to bottom, black, transparent 85%);
+    }
+
+    a { color: inherit; text-decoration: none; }
+
+    .page {
+      width: min(1160px, calc(100% - 32px));
+      margin: 0 auto;
+      padding: 28px 0 48px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 18px;
+      padding: 12px 16px;
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      background: rgba(7, 17, 31, 0.72);
+      backdrop-filter: blur(18px);
+      box-shadow: 0 14px 40px rgba(0, 0, 0, 0.18);
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      min-width: 0;
+    }
+
+    .mini-mark {
+      width: 42px;
+      height: 42px;
+      border-radius: 14px;
+      display: grid;
+      place-items: center;
+      font-weight: 900;
+      letter-spacing: -1px;
+      color: #04131b;
+      background: linear-gradient(135deg, var(--accent), var(--accent-2));
+      box-shadow: 0 10px 32px rgba(45, 212, 191, 0.26);
+      flex: 0 0 auto;
+    }
+
+    .brand-copy strong {
+      display: block;
+      font-size: 0.98rem;
+      letter-spacing: 0.02em;
+    }
+
+    .brand-copy span {
+      display: block;
+      color: var(--muted);
+      font-size: 0.78rem;
+      margin-top: 2px;
+    }
+
+    .status {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      border: 1px solid rgba(134, 239, 172, 0.24);
+      background: rgba(34, 197, 94, 0.08);
+      color: var(--success);
+      border-radius: 999px;
+      padding: 8px 12px;
+      font-size: 0.8rem;
+      white-space: nowrap;
+    }
+
+    .status::before {
+      content: "";
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: currentColor;
+      box-shadow: 0 0 0 5px rgba(134, 239, 172, 0.09);
+    }
+
+    .hero {
+      display: grid;
+      grid-template-columns: 1.1fr 0.9fr;
+      align-items: stretch;
+      gap: 22px;
+      margin-top: 22px;
+    }
+
+    .panel {
+      border: 1px solid var(--line);
+      background: var(--card);
+      backdrop-filter: blur(20px);
+      border-radius: 28px;
+      box-shadow: var(--shadow);
+    }
+
+    .hero-main {
+      padding: clamp(30px, 5vw, 58px);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero-main::after {
+      content: "";
+      position: absolute;
+      width: 250px;
+      height: 250px;
+      right: -90px;
+      top: -70px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(45,212,191,.22), transparent 68%);
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--accent);
+      font-weight: 800;
+      font-size: 0.78rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      margin-bottom: 18px;
+    }
+
+    .eyebrow::before {
+      content: "";
+      width: 28px;
+      height: 2px;
+      background: linear-gradient(90deg, var(--accent), var(--accent-2));
+      border-radius: 999px;
+    }
+
+    h1 {
+      margin: 0;
+      max-width: 760px;
+      font-size: clamp(2.35rem, 6vw, 5.1rem);
+      line-height: 0.98;
+      letter-spacing: -0.055em;
+    }
+
+    .gradient-name {
+      display: block;
+      margin-top: 10px;
+      color: transparent;
+      background: linear-gradient(110deg, #ffffff 5%, #baf8ef 42%, #8ad9ff 74%, #c4b5fd 100%);
+      -webkit-background-clip: text;
+      background-clip: text;
+    }
+
+    .subtitle {
+      margin: 24px 0 0;
+      max-width: 760px;
+      color: var(--muted);
+      font-size: clamp(1rem, 1.8vw, 1.2rem);
+      line-height: 1.8;
+    }
+
+    .arabic {
+      direction: rtl;
+      text-align: left;
+      display: block;
+      color: #cde4f3;
+      margin-top: 8px;
+      font-weight: 600;
+    }
+
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-top: 30px;
+    }
+
+    .btn {
+      min-height: 46px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 9px;
+      padding: 0 18px;
+      border-radius: 14px;
+      border: 1px solid var(--line);
+      font-weight: 800;
+      font-size: 0.9rem;
+      transition: transform .18s ease, border-color .18s ease, background .18s ease;
+    }
+
+    .btn:hover {
+      transform: translateY(-2px);
+      border-color: rgba(255,255,255,.34);
+    }
+
+    .btn-primary {
+      color: #031217;
+      border: none;
+      background: linear-gradient(135deg, var(--accent), var(--accent-2));
+      box-shadow: 0 16px 34px rgba(45, 212, 191, 0.17);
+    }
+
+    .btn-secondary { background: rgba(255,255,255,.035); }
+
+    .identity {
+      padding: 24px;
+      display: grid;
+      align-content: center;
+      justify-items: center;
+      text-align: center;
+      background:
+        linear-gradient(180deg, rgba(255,255,255,.035), transparent),
+        var(--card-strong);
+    }
+
+    .avatar {
+      width: 150px;
+      aspect-ratio: 1;
+      border-radius: 36px;
+      display: grid;
+      place-items: center;
+      position: relative;
+      font-size: 3.5rem;
+      font-weight: 950;
+      letter-spacing: -0.08em;
+      color: #04121b;
+      background:
+        linear-gradient(135deg, rgba(255,255,255,.55), transparent 42%),
+        linear-gradient(135deg, var(--accent), var(--accent-2) 58%, var(--accent-3));
+      box-shadow:
+        inset 0 1px 0 rgba(255,255,255,.75),
+        0 28px 70px rgba(45, 212, 191, 0.2);
+    }
+
+    .avatar::after {
+      content: "";
+      position: absolute;
+      inset: -8px;
+      border-radius: 43px;
+      border: 1px solid rgba(255,255,255,.16);
+    }
+
+    .identity h2 {
+      margin: 26px 0 8px;
+      font-size: 1.5rem;
+      letter-spacing: -0.02em;
+    }
+
+    .identity p {
+      margin: 0;
+      color: var(--muted);
+      line-height: 1.7;
+      font-size: 0.95rem;
+    }
+
+    .signature {
+      margin-top: 20px;
+      padding-top: 18px;
+      width: 100%;
+      border-top: 1px solid var(--line);
+      color: #cfe5f4;
+      font-size: 0.84rem;
+    }
+
+    .section {
+      margin-top: 22px;
+      padding: clamp(24px, 4vw, 38px);
+    }
+
+    .section-head {
+      display: flex;
+      align-items: end;
+      justify-content: space-between;
+      gap: 20px;
+      margin-bottom: 22px;
+    }
+
+    .section-head h3 {
+      margin: 0;
+      font-size: clamp(1.35rem, 3vw, 2.1rem);
+      letter-spacing: -0.035em;
+    }
+
+    .section-head p {
+      margin: 0;
+      max-width: 610px;
+      color: var(--muted);
+      line-height: 1.7;
+      font-size: 0.92rem;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 14px;
+    }
+
+    .feature {
+      min-height: 190px;
+      padding: 20px;
+      border-radius: 20px;
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,.028);
+      transition: transform .2s ease, background .2s ease, border-color .2s ease;
+    }
+
+    .feature:hover {
+      transform: translateY(-4px);
+      background: rgba(255,255,255,.05);
+      border-color: rgba(45, 212, 191, 0.28);
+    }
+
+    .icon {
+      width: 42px;
+      height: 42px;
+      border-radius: 13px;
+      display: grid;
+      place-items: center;
+      font-weight: 900;
+      color: var(--accent);
+      border: 1px solid rgba(45,212,191,.22);
+      background: rgba(45,212,191,.08);
+    }
+
+    .feature h4 { margin: 18px 0 9px; font-size: 1rem; }
+
+    .feature p {
+      margin: 0;
+      color: var(--muted);
+      line-height: 1.65;
+      font-size: 0.86rem;
+    }
+
+    .stack {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .tag {
+      padding: 10px 13px;
+      border-radius: 999px;
+      color: #ddecf7;
+      background: rgba(255,255,255,.04);
+      border: 1px solid var(--line);
+      font-size: 0.82rem;
+      font-weight: 750;
+    }
+
+    .credit {
+      display: grid;
+      grid-template-columns: 1.2fr 0.8fr;
+      gap: 16px;
+      margin-top: 22px;
+    }
+
+    .credit-card {
+      padding: 24px;
+      border-radius: 22px;
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,.028);
+    }
+
+    .credit-card h4 { margin: 0 0 10px; font-size: 1.02rem; }
+
+    .credit-card p {
+      margin: 0;
+      color: var(--muted);
+      line-height: 1.7;
+      font-size: 0.88rem;
+    }
+
+    .legal {
+      border-color: rgba(167, 139, 250, 0.25);
+      background: rgba(167, 139, 250, 0.055);
+    }
+
+    footer {
+      margin-top: 22px;
+      padding: 18px 20px;
+      text-align: center;
+      color: #8da4b9;
+      font-size: 0.78rem;
+      line-height: 1.7;
+    }
+
+    footer strong { color: #cde2f2; }
+
+    @media (max-width: 950px) {
+      .hero, .credit { grid-template-columns: 1fr; }
+      .identity { min-height: 430px; }
+      .grid { grid-template-columns: repeat(2, 1fr); }
+    }
+
+    @media (max-width: 620px) {
+      .page { width: min(100% - 20px, 1160px); padding-top: 10px; }
+      .topbar { border-radius: 14px; padding: 10px 12px; }
+      .brand-copy span { display: none; }
+      .status { font-size: 0.7rem; padding: 7px 9px; }
+      .hero { margin-top: 12px; gap: 12px; }
+      .panel { border-radius: 20px; }
+      .hero-main { padding: 30px 22px; }
+      .identity { min-height: 380px; }
+      .grid { grid-template-columns: 1fr; }
+      .section-head { align-items: flex-start; flex-direction: column; }
+      .actions { flex-direction: column; }
+      .btn { width: 100%; }
+      h1 { font-size: clamp(2.2rem, 15vw, 3.65rem); }
+    }
+  </style>
 </head>
-
 <body>
-    <div class="container">
-        <h1 class="my-3 border-bottom">Acknowledgments, Licensing and Certification</h1>
-        <h3>License information</h3>
-        <p>
-            Unless otherwise stated, this code is subject to the terms of the <a href="LICENSE">
-GNU General Public License version 3 or higher (GPL)</a>, a copy of which is included here for your convenience.<br />
+  <main class="page">
+    <nav class="topbar" aria-label="Project identity">
+      <div class="brand">
+        <div class="mini-mark" aria-hidden="true">HT</div>
+        <div class="brand-copy">
+          <strong>OpenEMR Production Platform</strong>
+          <span>Engineering · Deployment · Integration · Reliability</span>
+        </div>
+      </div>
+      <div class="status">Production Deployment</div>
+    </nav>
 
-            This code is also distributed under the terms of the <a href="#healthcare_disclaimer">Healthcare Disclaimer</a>, which can be found at the bottom of this page.
+    <section class="hero" aria-labelledby="profile-title">
+      <article class="panel hero-main">
+        <div class="eyebrow">Project Engineering Profile</div>
+        <h1 id="profile-title">
+          Engineered by
+          <span class="gradient-name">Hesham Talaat</span>
+        </h1>
+        <p class="subtitle">
+          Software Engineer responsible for the production deployment, infrastructure integration,
+          runtime configuration, reliability hardening, and technical customization of this
+          OpenEMR-based healthcare platform.
+          <span class="arabic" lang="ar">المهندس والمطور المسؤول عن تجهيز المنصة للنشر الفعلي، ربط البنية التحتية، وضبط الاعتمادية والتشغيل.</span>
         </p>
-        <h3>Websites</h3>
+
+        <div class="actions">
+          <a class="btn btn-primary" href="/interface/login/login.php?site=default">Open Platform Login</a>
+          <a class="btn btn-secondary" href="https://github.com/hzeattar" target="_blank" rel="noopener noreferrer">GitHub Profile</a>
+          <a class="btn btn-secondary" href="https://github.com/hzeattar/openemr" target="_blank" rel="noopener noreferrer">Project Repository</a>
+        </div>
+      </article>
+
+      <aside class="panel identity" aria-label="Developer identity">
+        <div class="avatar" aria-hidden="true">HT</div>
+        <h2>Engineer Hesham Talaat</h2>
+        <p>Software Engineer<br>Project Deployment &amp; Systems Integration</p>
+        <div class="signature">
+          Built with a focus on stability, maintainability, data persistence, and production readiness.
+        </div>
+      </aside>
+    </section>
+
+    <section class="panel section" aria-labelledby="contributions-title">
+      <div class="section-head">
+        <div>
+          <div class="eyebrow">Technical Contribution</div>
+          <h3 id="contributions-title">Project Responsibilities</h3>
+        </div>
         <p>
-            <a href="https://www.open-emr.org/">OpenEMR</a> - The OpenEMR website: <a href="https://www.open-emr.org/">www.open-emr.org</a>
-            <br />
-            <a href="https://www.open-emr.org/foundation/">OpenEMR Foundation</a> - The OpenEMR Foundation website: <a href="https://www.open-emr.org/foundation/">www.open-emr.org/foundation</a>
+          This deployment combines the official OpenEMR application with a production-focused
+          Railway architecture and a controlled deployment workflow.
         </p>
-        <h3>List of Contributors</h3>
-        <!-- To add your information, please edit http://open-emr.org/wiki/index.php/OpenEMR_Acknowledgments . This file is built from the contents of that wiki page. -->
-        <table class="table table-bordered table-striped">
-            <thead>
-                <tr>
-                    <th>Contributor</th>
-                    <th>Contact</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td>Abdulrahman Jabour</td>
-                    <td>ajabour@iupui.edu</td>
-                </tr>
-                <tr>
-                    <td>Andres Paglayan</td>
-                    <td>andres@paglayan.com</td>
-                </tr>
-                <tr>
-                    <td>Andrew Moore</td>
-                    <td></td>
-                </tr>
-                <tr>
-                    <td>Arnab Naha</td>
-                    <td>superarnab@gmail.com
-                        <br />
-                        <a href="https://www.nahahealthclinic.com">www.nahahealthclinic.com</a></td>
-                </tr>
-                <tr>
-                    <td> <a href="http://avantsys.gr">AvantSys Informatics</a></td>
-                    <td>contact@avantsys.gr
-                        <br /> Mpatzilioti Str., Terpsithea,
-                        <br /> Larissa 41500,
-                        <br /> Greece
-                        <br /> Tel: +302410287058
-                        <br /> Konstantinos Tzoannopoulos
-                        <br /> Konstantinos Xatzaras
-                        <br /> George Vasilakos</td>
-                </tr>
-                <tr>
-                    <td><a href="http://www.bowenmd.com">Bowen Primary & Urgent Care</a> </td>
-                    <td>2365 Springs Rd NE, Hickory, NC 28601
-                        <br /> Emily Killian
-                        <br /> Nikolai Vitsyn
-                        <br /> Samuel T. Bowen, MD
-                        <br />
-                        <a href="mailto:drbowen@bowenmd.com">drbowen@bowenmd.com</a>
-                        <br />
-                    </td>
-                </tr>
-                <tr>
-                    <td>Boyd Stephen Smith Jr.</td>
-                    <td>bss@iguanasuicide.net</td>
-                </tr>
-                <tr>
-                    <td>Brady Miller</td>
-                    <td>brady.g.miller@gmail.com</td>
-                </tr>
-                <tr>
-                    <td>CapMinds Private Ltd</td>
-                    <td><a href="http://www.capminds.com/">www.capminds.com</a>
-                        <br /> 7/3, 2nd Floor, Madley Road,
-                        <br /> T.Nagar, Chennai, TamilNadu - INDIA,
-                        <br /> Phone: +91 975.127.6555, FAX:+1 512-853-3013
-                        <br /> Pandi Paramasivan : pandi.param@capminds.com</td>
-                </tr>
-                <tr>
-                    <td>CapMinds Technologies Corp</td>
-                    <td><a href="http://www.capminds.com/">www.capminds.com</a>
-                        <br /> 1853, Old Meadow RD, Suite #103,
-                        <br /> McLean VA 22102 - USA
-                        <br /> Phone: +1 571.213.3245, FAX:+1 512-853-3013
-                        <br /> Pandi Paramasivan : pandi.param@capminds.com</td>
-                </tr>
-                <tr>
-                    <td>Care Management Solutions, Inc.</td>
-                    <td><a href="http://www.cmsvt.com/">www.cmsvt.com</a>
-                        <br /> 25 East Center St
-                        <br /> Rutland, VT 05701
-                        <br /> Phone: (800) 371-8685, FAX: (802) 770-5175
-                        <br /> stephen.waite@cmsvt.com
-                    </td>
-                </tr>
-                <tr>
-                    <td>Comlink Inc.</td>
-                    <td><a href="http://www.comlinkinc.com">www.comlinkinc.com</a>
-                        <br /> Amit Panjwani amit@comlinkinc.com
-                    </td>
-                </tr>
-                <tr>
-                    <td>Community Behavioral Health</td>
-                    <td><a href="http://www.communitybehavioralhealth.net">www.communitybehavioralhealth.net</a>
-                        <br /> Shyam Bayani sbhayani@communitybehavioralhealth.net
-                    </td>
-                </tr>
-                <tr>
-                    <td>David Eschelbacher MD</td>
-                    <td></td>
-                </tr>
-                <tr>
-                    <td>Discover and Change, Inc</td>
-                    <td><a href="https://www.discoverandchange.com">www.discoverandchange.com</a>
-                        <br /> Georgia, USA / Utah USA
-                        <br /> Phone: (385) 233-9626
-                        <br /> Original company was Nielson Software Consulting
-                        <br /> Stephen Nielson: snielson@discoverandchange.com</td>
-                </tr>
-                <tr>
-                    <td>EnSoftek, Inc.</td>
-                    <td><a href="http://www.ensoftek.com/">www.ensoftek.com</a>
-                        <br /> 7861 SW Cirrus Dr, Bldg 24B, Beaverton OR 97008, USA
-                        <br /> Phone: +1 503 643 1226 FAX:+1 503 626 1769
-                        <br /> Ramesh Nagul: ramesh@ensoftek.com</td>
-                </tr>
-                <tr>
-                    <td>GATMAN</td>
-                    <td></td>
-                </tr>
-                <tr>
-                    <td>George Tye</td>
-                    <td>george.tye@gmail.com</td>
-                </tr>
-                <tr>
-                    <td>Ian Jardine</td>
-                    <td><a href="https://github.com/epsdky">github.com/epsdky</a></td>
-                </tr>
-                <tr>
-                    <td>INFEG</td>
-                    <td><a href="https://www.infeg.com">www.infeg.com</a>
-                        <br /> 13, Gandhi Nagar Karumbukkadai
-                        <br /> Coimbatore - 641008
-                        <br /> INDIA
-                        <br /> Phone: +91 8825618027
-                        <br /> Email: services@infeg.com
-                        <br /> Khaleela Abdul Farook - khaleela@infeg.com</td>
-                </tr>
-                <tr>
-                    <td>International Planned Parenthood Federation</td>
-                    <td><a href='http://www.ippf.org/'>www.ippf.org</a></td>
-                </tr>
-                <tr>
-                    <td>James Buchmiller</td>
-                    <td></td>
-                </tr>
-                <tr>
-                    <td>James R. Stone</td>
-                    <td>stone@annashaegrp.com
-                        <br /> fndtn357@gmail.com
-                    </td>
-                </tr>
-                <tr>
-                    <td>Juggernaut Systems Express</td>
-                    <td><a href="https://www.affordablecustomehr.com/">www.affordablecustomehr.com</a>
-                        <br /> 505 Independence Pkwy, Chesapeake, VA 23320
-                        <br /> Phone: +1 757 328 2736
-                        <br /> Sherwin Gaddis: sherwin@affordablecustomehr.com</td>
-                </tr>
-                <tr>
-                    <td>Julia Longtin</td>
-                    <td>julia.longtin@gmail.com</td>
-                </tr>
-                <tr>
-                    <td>Kanoberson Asher</td>
-                    <td>Pohnpei Community Health Center
-                        <br /> PO BOX DRAWER 0
-                        <br /> POHNPEI, FM 96941
-                        <br /> Federated States of Micronesia
-                        <br /> ptspohnpei@gmail.com
-                        <br /> +691 320-2438</td>
-                </tr>
-                <tr>
-                    <td>Kevin Yeh</td>
-                    <td>kevin.y@integralemr.com</td>
-                </tr>
-                <tr>
-                    <td>Lilly Systems & Solutions</td>
-                    <td><a href="http://www.lillysystems.com/">www.lillysystems.com</a>
-                        <br /> openemr@lillysystems.com
-                        <br /> Including:
-                        <br /> Jim Lilly
-                        <br /> Debbie Lilly
-                        <br /> Paul Spilman
-                        <br /> Jacob Harrison
-                        <br /> Terry Hill</td>
-                </tr>
-                <tr>
-                    <td>Linda E. Hungerford, M.D.</td>
-                    <td>General and Medical Psychiatry
-                        <br /> Maple Street Clinic, Ltd.
-                        <br /> 1401 15th Street
-                        <br /> Lawrenceville IL 62439
-                        <br /> mscltd@earthlink.net
-                    </td>
-                </tr>
-                <tr>
-                  <td>Matthew Vita</td>
-                  <td>www.matthewvita.com</td>
-                </tr>
-                <tr>
-                    <td>MD Support</td>
-                    <td>mdsupport@users.sf.net</td>
-                </tr>
-                <tr>
-                    <td>MD-Technologies, Inc.</td>
-                    <td><a href="http://www.MD-Technologies.net/">www.MD-Technologies.net</a>
-                        <br /> 393 Calle Mendez Vigo, Dorado, PR
-                        <br /> Phone: 787-368-2321
-                        <br /> Alfonso Perez: aperez@MD-Technologies.net</td>
-                </tr>
-                <tr>
-                    <td>MedFetch, LLC</td>
-                    <td><a href="http://www.MedFetch.com/">www.MedFetch.com</a>
-                        <br /> 275 Bicentennial Highway
-                        <br /> Springfield, MA 01118
-                        <br /> Phone: (413) 783-3100
-                        <br /> magauran@medfetch.com
-                    </td>
-                </tr>
-                <tr>
-                    <td>Medical Information Integration, LLC</td>
-                    <td><a href="http://www.mi-squared.com/">www.mi-squared.com</a>
-                        <br /> info@mi-squared.com
-                        <br /> Aron Racho
-                        <br /> Jeremy Wallace
-                        <br /> Ken Chapple
-                        <br /> Tony McCormick</td>
-                </tr>
-                <tr>
-                    <td>MMD Data Corporation</td>
-                    <td>inquire@mmddata.ca - 1-877-462-5292
-                        <br />
-                        <a href="http://www.mmddata.ca/">www.mmddata.ca</a>
-                        <br /> St. Thomas, Ontario, Canada
-                        <br /> Daniel Pfingstgraef: daniel@mmddata.ca</td>
-                </tr>
-                <tr>
-                    <td>Mohammed Bamajboor</td>
-                    <td></td>
-                </tr>
-                <tr>
-                    <td>Netic Infoservices - Argentina</td>
-                    <td><a href="http://openemr.com.ar">openemr.com.ar</a> (Spanish) or <a href="http://medical-records.net">medical-records.net</a> (English)
-                        <br /> Sergio Samoilovich</td>
-                </tr>
-                <tr>
-                    <td>Nilvio Aquino</td>
-                    <td></td>
-                </tr>
-                <tr>
-                    <td>Niru Jani MD</td>
-                    <td><a href="http://maple-shade.org"></a></td>
-                </tr>
-                <tr>
-                    <td>Oak Street Health</td>
-                    <td><a href="www.oakstreethealth.com">www.oakstreethealth.com</a>
-                        <br /> Jason Van Den Eeden
-                        <br /> jason.vandeneeden@oakstreethealth.com
-                    </td>
-                </tr>
-                <tr>
-                    <td><a href="https://opencoreemr.com">OpenCoreEMR Inc.</a></td>
-                    <td><a href="https://opencoreemr.com">opencoreemr.com</a>
-                        <br /> <a href="https://github.com/opencoreemr/">GitHub</a>
-                        <br /> <a href="https://x.com/openCoreEMR">@openCoreEMR</a>
-                        <br /> <a href="https://www.linkedin.com/company/opencoreemr/">LinkedIn</a>
-                        <br /> <a href="https://bsky.app/profile/opencoreemr.bsky.social">@opencoreemr.bsky.social</a>
-                        <br />Greg Sirotek: <a href="mailto:greg@opencoreemr.com">greg@opencoreemr.com</a>
-                        <br />Michael A. Smith: <a href="mailto:michael@opencoreemr.com">michael@opencoreemr.com</a>
-                        <br />Matthew Summers: <a href="mailto:matt@opencoreemr.com">matt@opencoreemr.com</a>
-                    </td>
-                </tr>
-                <tr>
-                    <td>OpenEMR Foundation</td>
-                    <td><a href="https://www.open-emr.org/foundation/">www.open-emr.org/foundation</a>
-                    </td>
-                </tr>
-                <tr>
-                    <td>Open Plan IT</td>
-                    <td><a href="https://www.openplanit.com/">www.openplanit.com</a>
-                    </td>
-                </tr>
-                <tr>
-                    <td>Open Plan IT Ireland</td>
-                    <td><a href="https://www.openplanit.ie/">www.openplanit.ie</a>
-                    </td>
-                </tr>
-                <tr>
-                    <td>Open Source Medical Software</td>
-                    <td><a href="http://www.openmedsoftware.org/">www.openmedsoftware.org</a>
-                        <br /> 1470 9th Ave. Dr. NE; Hickory, NC 28601
-                        <br /> 1-828-325-0950
-                    </td>
-                </tr>
-                <tr>
-                    <td>Patient Healthcare Analytics, Inc.
-                        <br /> Kevin McAloon (Mac)</td>
-                    <td>mcaloon@patienthealthcareanalytics.com
-                        <br /> 1-401-345-4665
-                    </td>
-                </tr>
-                <tr>
-                    <td>Pennington Firm</td>
-                    <td>402 West Broadway; 4th Floor; San Diego, CA 92101</td>
-                </tr>
-                <tr>
-                    <td>Phyaura, LLC
-                        <br /> </td>
-                    <td>5290 Applegate Drive
-                        <br /> Spring Hill, Florida 34606
-                        <br /> (888) PHYAURA 749-2872
-                        <br />
-                        <a href="http://www.phyaura.com/">www.phyaura.com</a></td>
-                </tr>
-                <tr>
-                    <td>Pieter W. Blankevoort</td>
-                    <td>pimmblankevoort at hotmail dot com
-                        <br />
-                        <a href="http://dokteratcuracao.com/">dokteratcuracao.com</a></td>
-                </tr>
-                <tr>
-                    <td>Pro Care Medical Centers</td>
-                    <td><a href="http://www.procaremedcenter.com/">www.procaremedcenter.com</a>
-                        <br /> brent@procaremedcenter.com</td>
-                </tr>
-                <tr>
-                    <td>Richard Mishler
-                        <br /> Eclectic Domain</td>
-                    <td><a href="http://www.rmishler.com/">www.rmishler.com</a></td>
-                </tr>
-                <tr>
-                    <td>Robert Down</td>
-                    <td>robertdown@live.com</td>
-                </tr>
-                <tr>
-                    <td>Roberto Vasquez</td>
-                    <td>robertogagliotta@gmail.com</td>
-                </tr>
-                <tr>
-                    <td>Rosion Versace Dzian</td>
-                    <td>rozion_dzian@yahoo.fr</td>
-                </tr>
-                <tr>
-                    <td>Scott Wakefield</td>
-                    <td>scott@npclinics.com.au</td>
-                </tr>
-                <tr>
-                    <td>Suliman Alomran</td>
-                    <td><a href="http://sulimanalomran.com/">sulimanalomran.com</a></td>
-                </tr>
-                <tr>
-                    <td>Sunset Systems</td>
-                    <td><a href="http://www.sunsetsystems.com/">www.sunsetsystems.com</a>
-                        <br /> Rod Roark <rod@sunsetsystems.com></td>
-                </tr>
-                <tr>
-                    <td>Sushma Jani MD LLC</td>
-                    <td><sjmdllc@gmail.com></td>
-                </tr>
-                <tr>
-                    <td>Synergy Infoconnect</td>
-                    <td><a href="http://www.synergyinfoconnect.com">www.synergyinfoconnect.com</a>
-                        <br /> Michael J. Blaho: mblaho@synergyinfoconnect.com</td>
-                </tr>
-                <tr>
-                    <td>Synitech, Incorporated
-                        <br />
-                    <td><a href="http://www.synitech.com/">www.synitech.com</a>
-                        <br /> 145 Brick Kiln Place; Cheshire, CT 06410</td>
-                </tr>
-                <tr>
-                    <td>TajEmo Enterprises</td>
-                    <td><a href="http://www.tajemo.co.za/">www.tajemo.co.za</a>
-                        <br /> Port Elizabeth, South Africa
-                        <br /> Phone: +27 43 7222356
-                        <br /> SMS: +27 79 268 7754
-                        <br /> info@tajemo.co.za
-                    </td>
-                </tr>
-                <tr>
-                    <td>Tekkno Genius</td>
-                    <td>tekknogenius@yahoo.com</td>
-                </tr>
-                <tr>
-                    <td>Ternopil State Medical University</td>
-                    <td><a href="http://www.tdmu.edu.ua/">www.tdmu.edu.ua</a>
-                        <br /> m.Voli, 1, Ternopil, 46001, Ukraine
-                        <br /> Medical Informatics Department
-                        <br /> Andriy Semenets: semteacher@gmail.com</td>
-                </tr>
-                <tr>
-                    <td>Tsilibotis Dimitrios MD</td>
-                    <td>Greece</td>
-                </tr>
-                <tr>
-                    <td>ViSolve</td>
-                    <td><a href="http://www.visolve.com/">www.visolve.com</a>
-                        <br /> Email: services@visolve.com
-                        <br /> Phone: (408) - 850 - 2243
-                        <br /> 6559, Springpath lane, San Jose, California - 95120.</td>
-                </tr>
-                <tr>
-                    <td>Z&H Consultancy Services (Pvt) LTD.</td>
-                    <td><a href="http://www.zhservices.com/">www.zhservices.com</a>
-                        <br /> 33/2165 Zaiham Towers, Vennala PO, Cochin, 682028, India
-                        <br /> Phone: +91 989 510 1355 FAX:+91 484 406 7873
-                        <br /> Mohamed Shahzad: shah@zhservices.com</td>
-                </tr>
-                <tr>
-                    <td>Z&H Healthcare Solutions, LLC.</td>
-                    <td><a href="http://www.zhservices.com/">www.zhservices.com</a>
-                        <br /> 2010 Corporate Ridge, Ste 700, McLean VA 22102, USA
-                        <br /> Phone: +1 571 766 8074 FAX:+1 703 345 0512
-                        <br /> Shameem C Hameed: sam@zhservices.com</td>
-                </tr>
-            </tbody>
-        </table>
-        <h3 class="mt-4">Copyright</h3>
-        <p>
-            Copyright information for most files in the distribution can be found within each file. An exception is for code written prior to 2005 that is not accompanied by explicit copyright statements; the copyright of these files are held by their respective authors, which include:
-        </p>
-        <!-- To add your information, please edit http://open-emr.org/wiki/index.php/OpenEMR_Acknowledgments . This file is built from the contents of that wiki page. -->
-        <table class="table table-bordered table-striped">
-            <thead>
-                <tr>
-                    <th>Contributor</th>
-                    <th>Contact</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td>Synitech, Incorporated (Copyright 2002-2003)</td>
-                    <td><a href="http://www.synitech.com/">www.synitech.com</a>
-                        <br /> 145 Brick Kiln Place; Cheshire, CT 06410</td>
-                </tr>
-                <tr>
-                    <td>Pennington Firm (Copyright 2003-2004)</td>
-                    <td>402 West Broadway; 4th Floor; San Diego, CA 92101</td>
-                </tr>
-                <tr>
-                    <td>Andres Paglayan</td>
-                    <td>andres@paglayan.com</td>
-                </tr>
-                <tr>
-                    <td>GATMAN</td>
-                    <td></td>
-                </tr>
-                <tr>
-                    <td>James Buchmiller</td>
-                    <td></td>
-                </tr>
-                <tr>
-                    <td>Tekkno Genius</td>
-                    <td>tekknogenius@yahoo.com</td>
-                </tr>
-            </tbody>
-        </table>
-        <h3 class="mt-4">Healthcare Disclaimer</h3>
-        <a name="healthcare_disclaimer"></a>
-        <p>
-        In the United States, or any other jurisdictions where they may apply, the following additional disclaimer of warranty and limitation of liability are hereby incorporated into the terms and conditions of GPL:
-            <ol>
-                <li>No warranties of any kind whatsoever are made as to the results that You will obtain from relying upon the covered code (or any information or content obtained by way of the covered code), including but not limited to compliance with privacy laws or regulations or clinical care industry standards and protocols. Use of the covered code is not a substitute for a health care provider's standard practice or professional judgment. Any decision with regard to the appropriateness of treatment, or the validity or reliability of information or content made available by the covered code, is the sole responsibility of the health care provider. Consequently, it is incumbent upon each health care provider to verify all medical history and treatment plans with each patient.</li>
-                <li>Under no circumstances and under no legal theory, whether tort (including negligence), contract, or otherwise, shall any Contributor, or anyone who distributes Covered Software as permitted by the license, be liable to You for any indirect, special, incidental, consequential damages of any character including, without limitation, damages for loss of goodwill, work stoppage, computer failure or malfunction, or any and all other damages or losses, of any nature whatsoever (direct or otherwise) on account of or associated with the use or inability to use the covered content (including, without limitation, the use of information or content made available by the covered code, all documentation associated therewith, and the failure of the covered code to comply with privacy laws and regulations or clinical care industry standards and protocols), even if such party shall have been informed of the possibility of such damages.</li>
-            </ol>
-        </p>
-    </div>
+      </div>
+
+      <div class="grid">
+        <article class="feature">
+          <div class="icon">01</div>
+          <h4>Production Deployment</h4>
+          <p>Containerized OpenEMR deployment connected to GitHub and Railway with repeatable production releases.</p>
+        </article>
+
+        <article class="feature">
+          <div class="icon">02</div>
+          <h4>Runtime Engineering</h4>
+          <p>Apache operator mode, dynamic Railway ports, public routing, healthchecks, and container startup hardening.</p>
+        </article>
+
+        <article class="feature">
+          <div class="icon">03</div>
+          <h4>Data Persistence</h4>
+          <p>MySQL integration and persistent site storage designed to preserve configuration and uploaded documents.</p>
+        </article>
+
+        <article class="feature">
+          <div class="icon">04</div>
+          <h4>Operational Reliability</h4>
+          <p>Defensive validation, safe initialization, deployment diagnostics, and recovery-conscious configuration.</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="panel section" aria-labelledby="stack-title">
+      <div class="section-head">
+        <div>
+          <div class="eyebrow">Technology</div>
+          <h3 id="stack-title">Platform Stack</h3>
+        </div>
+        <p>Core technologies used to operate and maintain this production environment.</p>
+      </div>
+
+      <div class="stack" aria-label="Technology stack">
+        <span class="tag">OpenEMR 8.2.0</span>
+        <span class="tag">PHP</span>
+        <span class="tag">Apache HTTP Server</span>
+        <span class="tag">MySQL</span>
+        <span class="tag">Docker</span>
+        <span class="tag">Railway</span>
+        <span class="tag">GitHub</span>
+        <span class="tag">Persistent Volumes</span>
+        <span class="tag">Healthcheck Monitoring</span>
+      </div>
+
+      <div class="credit">
+        <article class="credit-card">
+          <h4>Project Attribution</h4>
+          <p>
+            Deployment engineering, production configuration, infrastructure integration, and
+            project-level customization were implemented for this environment by
+            <strong>Engineer Hesham Talaat</strong>.
+          </p>
+        </article>
+
+        <article class="credit-card legal">
+          <h4>Open-Source Acknowledgement</h4>
+          <p>
+            This platform is based on OpenEMR open-source software. OpenEMR, its original authors,
+            contributors, trademarks, copyrights, and license rights remain with their respective owners.
+          </p>
+        </article>
+      </div>
+    </section>
+
+    <footer class="panel">
+      <strong>Engineer Hesham Talaat</strong> · Software Engineering &amp; Production Systems
+      <br>
+      OpenEMR-based deployment · Production environment
+    </footer>
+  </main>
 </body>
 </html>
