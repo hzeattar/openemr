@@ -28,7 +28,15 @@
 
     {% include "login/partials/js/login_submit.js.twig" %}
 
-    {% block css %}{% endblock %}
+    {% block css %}
+    <style>
+        .band,
+        .box,
+        .vertical-band {
+            background-color: var(--light);
+        }
+    </style>
+    {% endblock %}
     <script>
         document.addEventListener('DOMContentLoaded', function () {
             const passInput = document.getElementById('clearPass');
