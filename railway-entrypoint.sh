@@ -8,6 +8,16 @@ SQLCONF_FILE="${SITES_DIR}/default/sqlconf.php"
 SEED_DIR="/swarm-pieces/sites"
 UPSTREAM_ENTRYPOINT="${OE_ROOT}/openemr.sh"
 
+# Railway runs this image as a single web-service replica. OpenEMR's upstream
+# startup script sets OPERATOR=no when K8S=admin, which completes setup but exits
+# before Apache starts. Ignore orchestration flags inherited from Railway
+# variables and always run this service as the singleton Apache operator.
+if [[ -n "${K8S:-}" || "${SWARM_MODE:-no}" != "no" ]]; then
+  echo "[railway-init] Overriding orchestration mode for singleton Railway web service."
+fi
+unset K8S
+export SWARM_MODE="no"
+
 is_configured() {
   php -r "if (is_file('${SQLCONF_FILE}')) { require '${SQLCONF_FILE}'; echo isset(\$config) && \$config ? 1 : 0; } else { echo 0; }" \
     2>/dev/null | tail -n 1
