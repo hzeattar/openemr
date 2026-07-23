@@ -26,8 +26,10 @@ plain="${BACKUP_DIR}/openemr-sites-${TIMESTAMP}.tar.gz"
 plain_tmp="${plain}.partial"
 trap 'rm -f "${plain_tmp}" "${plain_tmp}.enc"' EXIT
 
-tar --numeric-owner --one-file-system -C "$(dirname "${SITES_DIR}")" \
-  -czf "${plain_tmp}" "$(basename "${SITES_DIR}")"
+# Use portable tar flags available in the Alpine-based OpenEMR image. The source
+# path is the dedicated sites directory, so unrelated filesystem paths are never
+# included.
+tar -C "$(dirname "${SITES_DIR}")" -czf "${plain_tmp}" "$(basename "${SITES_DIR}")"
 tar -tzf "${plain_tmp}" >/dev/null
 
 if [[ -n "${BACKUP_PASSPHRASE:-}" ]]; then
