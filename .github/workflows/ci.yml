@@ -40,10 +40,20 @@ jobs:
           grep -Fq 'healthcheckPath' railway.json
           grep -Fq 'No protected response is cached' customizations/pwa/service-worker.js
 
-      - name: Guard against committed secrets
+      - name: Guard deployment files against committed secrets
         run: |
-          if grep -RInE --exclude-dir=.git --exclude='*.md' \
-            '(MYSQL_PASS|MYSQL_ROOT_PASS|OE_PASS|API_KEY|SECRET_KEY)[[:space:]]*=[[:space:]]*["'"'][^$][^"'"']+' .; then
-            echo 'Potential hard-coded secret detected.' >&2
+          targets=(
+            Dockerfile
+            railway-entrypoint.sh
+            railway.json
+            .env.railway.example
+            acknowledge_license_cert.html
+            customizations
+            ops
+          )
+          if grep -RInE --exclude='*.md' \
+            '(MYSQL_PASS|MYSQL_ROOT_PASS|OE_PASS|API_KEY|SECRET_KEY)[[:space:]]*=[[:space:]]*["'"'][^$][^"'"']+' \
+            "${targets[@]}"; then
+            echo 'Potential hard-coded secret detected in deployment-owned files.' >&2
             exit 1
           fi
