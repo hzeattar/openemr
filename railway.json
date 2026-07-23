@@ -5,8 +5,8 @@
     "dockerfilePath": "Dockerfile"
   },
   "deploy": {
-    "healthcheckPath": "/meta/health/readyz",
-    "healthcheckTimeout": 600,
+    "healthcheckPath": "/railway-health",
+    "healthcheckTimeout": 900,
     "restartPolicyType": "ALWAYS",
     "restartPolicyMaxRetries": 10,
     "drainingSeconds": 15
