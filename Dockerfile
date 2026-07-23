@@ -2,8 +2,9 @@
 # Uses the official stable production image instead of rebuilding the full source tree.
 FROM openemr/openemr:8.2.0
 
-# OpenEMR's Apache service listens on port 80 inside the container.
-ENV PORT=80
+# Railway injects PORT at runtime. railway-entrypoint.sh rewrites Apache's
+# Listen and HTTP VirtualHost directives to that exact value before startup.
+# Port 80 remains the non-Railway fallback and image metadata only.
 EXPOSE 80
 
 # Railway persistent volumes are empty bind mounts. Seed the official OpenEMR

@@ -7,6 +7,49 @@ SITES_DIR="${OE_ROOT}/sites"
 SQLCONF_FILE="${SITES_DIR}/default/sqlconf.php"
 SEED_DIR="/swarm-pieces/sites"
 UPSTREAM_ENTRYPOINT="${OE_ROOT}/openemr.sh"
+HTTPD_CONF="/etc/apache2/httpd.conf"
+OPENEMR_APACHE_CONF="/etc/apache2/conf.d/openemr.conf"
+
+# Railway healthchecks use the runtime PORT value. Bind Apache to that exact
+# port on all IPv4 interfaces instead of relying on OpenEMR's default port 80.
+configure_railway_port() {
+  local app_port="${PORT:-80}"
+
+  if [[ ! "${app_port}" =~ ^[0-9]+$ ]]; then
+    echo "[railway-init] ERROR: PORT must be numeric; received '${app_port}'" >&2
+    exit 1
+  fi
+
+  local port_number=$((10#${app_port}))
+  if (( port_number < 1 || port_number > 65535 )); then
+    echo "[railway-init] ERROR: PORT must be between 1 and 65535; received '${app_port}'" >&2
+    exit 1
+  fi
+
+  if [[ ! -f "${HTTPD_CONF}" || ! -f "${OPENEMR_APACHE_CONF}" ]]; then
+    echo "[railway-init] ERROR: Apache configuration files were not found" >&2
+    exit 1
+  fi
+
+  if grep -q '^Listen 0\.0\.0\.0:80$' "${HTTPD_CONF}"; then
+    sed -i "s/^Listen 0\.0\.0\.0:80$/Listen 0.0.0.0:${port_number}/" "${HTTPD_CONF}"
+  elif grep -q '^Listen 80$' "${HTTPD_CONF}"; then
+    sed -i "s/^Listen 80$/Listen 0.0.0.0:${port_number}/" "${HTTPD_CONF}"
+  elif ! grep -q "^Listen 0\.0\.0\.0:${port_number}$" "${HTTPD_CONF}"; then
+    echo "[railway-init] ERROR: Could not locate OpenEMR's HTTP Listen directive" >&2
+    exit 1
+  fi
+
+  if grep -q '<VirtualHost \*:80>' "${OPENEMR_APACHE_CONF}"; then
+    sed -i "s#<VirtualHost \*:80>#<VirtualHost *:${port_number}>#" "${OPENEMR_APACHE_CONF}"
+  elif ! grep -q "<VirtualHost \*:${port_number}>" "${OPENEMR_APACHE_CONF}"; then
+    echo "[railway-init] ERROR: Could not locate OpenEMR's HTTP VirtualHost directive" >&2
+    exit 1
+  fi
+
+  export PORT="${port_number}"
+  echo "[railway-init] Apache configured to listen on 0.0.0.0:${PORT}."
+}
 
 # Railway runs this image as a single web-service replica. OpenEMR's upstream
 # startup script sets OPERATOR=no when K8S=admin, which completes setup but exits
@@ -17,6 +60,8 @@ if [[ -n "${K8S:-}" || "${SWARM_MODE:-no}" != "no" ]]; then
 fi
 unset K8S
 export SWARM_MODE="no"
+
+configure_railway_port
 
 is_configured() {
   php -r "if (is_file('${SQLCONF_FILE}')) { require '${SQLCONF_FILE}'; echo isset(\$config) && \$config ? 1 : 0; } else { echo 0; }" \
