@@ -1,0 +1,85 @@
+{#
+  Project login base overlay.
+  Keeps OpenEMR authentication untouched while adding project branding,
+  responsive metadata, RTL awareness and a privacy-safe PWA registration.
+#}
+{% set rtlLanguages = ['arabic', 'العربية', 'hebrew', 'persian', 'urdu'] %}
+{% set normalizedLanguage = defaultLangName|default('English')|lower %}
+{% set isRtl = normalizedLanguage in rtlLanguages %}
+{% set srOnly = (showLabels == true) ? "" : "sr-only" %}
+<!DOCTYPE html>
+<html lang="{{ isRtl ? 'ar' : 'en' }}" dir="{{ isRtl ? 'rtl' : 'ltr' }}">
+<head>
+    {% if displayGoogleSignin %}
+        {% include "login/partials/html/google_signin.html.twig" %}
+    {% endif %}
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <meta name="theme-color" content="#0f766e">
+    <meta name="color-scheme" content="light">
+    <meta name="robots" content="noindex,nofollow,noarchive">
+    <link rel="manifest" href="/manifest.webmanifest">
+    <link rel="icon" type="image/svg+xml" href="/assets/clinic/clinic-icon.svg">
+
+    <title>{% block title %}{{ title|text }} {{ "Login"|xlt }}{% endblock %}</title>
+    {% block head %}{% endblock %}
+    {{ setupHeader() }}
+
+    {% include "login/partials/js/login_submit.js.twig" %}
+
+    {% block css %}
+    <style>
+        .band,
+        .box,
+        .vertical-band {
+            background-color: var(--light);
+        }
+    </style>
+    {% endblock %}
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const passInput = document.getElementById('clearPass');
+            const toggle = document.getElementById('password-icon');
+            if (passInput && toggle) {
+                toggle.addEventListener('click', function () {
+                    const isPassword = passInput.getAttribute('type') === 'password';
+                    passInput.setAttribute('type', isPassword ? 'text' : 'password');
+                    this.classList.toggle('fa-eye');
+                    this.classList.toggle('fa-eye-slash');
+                });
+            }
+
+            const languageSelect = document.querySelector('select[name="languageChoice"]');
+            const setDirectionFromLanguage = function () {
+                if (!languageSelect) {
+                    return;
+                }
+                const selectedText = languageSelect.options[languageSelect.selectedIndex]?.text || '';
+                const rtl = /العربية|Arabic|فارسی|Persian|עברית|Hebrew|اردو|Urdu/i.test(selectedText);
+                document.documentElement.dir = rtl ? 'rtl' : 'ltr';
+                document.documentElement.lang = rtl ? 'ar' : 'en';
+                document.body.classList.toggle('clinic-rtl', rtl);
+            };
+            setDirectionFromLanguage();
+            languageSelect?.addEventListener('change', setDirectionFromLanguage);
+        });
+
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', function () {
+                navigator.serviceWorker.register('/service-worker.js', {scope: '/'}).catch(function () {
+                    // PWA support is optional; authentication must never depend on it.
+                });
+            });
+        }
+    </script>
+</head>
+<body class="clinic-login-page">
+{% block pre_content %}{% endblock %}
+{% block content %}{% endblock %}
+{% block post_content %}{% endblock %}
+</body>
+</html>
+{% if displayGoogleSignin %}
+    {% include "login/partials/js/google_signin.js.twig" %}
+{% endif %}

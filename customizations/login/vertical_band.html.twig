@@ -1,0 +1,177 @@
+{#
+  Responsive bilingual project login layout.
+  The original OpenEMR form, CSRF/session behavior and authentication action
+  are kept through the official login partials.
+#}
+{% extends "login/base.html.twig" %}
+
+{% block css %}
+{{ parent() }}
+<style>
+:root {
+    --clinic-primary: #0f766e;
+    --clinic-primary-dark: #115e59;
+    --clinic-accent: #14b8a6;
+    --clinic-ink: #0f172a;
+    --clinic-muted: #64748b;
+    --clinic-border: #dbe4ea;
+    --clinic-surface: rgba(255, 255, 255, .96);
+    --clinic-shadow: 0 24px 70px rgba(15, 23, 42, .14);
+}
+* { box-sizing: border-box; }
+body.clinic-login-page {
+    margin: 0;
+    min-height: 100vh;
+    color: var(--clinic-ink);
+    background:
+        radial-gradient(circle at 12% 14%, rgba(20,184,166,.18), transparent 34%),
+        radial-gradient(circle at 87% 82%, rgba(14,165,233,.14), transparent 32%),
+        linear-gradient(145deg, #eef8f7 0%, #f8fafc 48%, #eaf4fb 100%);
+    font-family: Inter, "Noto Sans Arabic", Tahoma, Arial, sans-serif;
+}
+.clinic-login-shell {
+    min-height: 100vh;
+    display: grid;
+    grid-template-columns: minmax(0, 1.15fr) minmax(380px, .85fr);
+}
+.clinic-login-hero {
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    padding: clamp(2rem, 6vw, 6rem);
+    background: linear-gradient(145deg, rgba(15,118,110,.97), rgba(15,59,86,.96));
+    color: #fff;
+}
+.clinic-login-hero::before,
+.clinic-login-hero::after {
+    content: "";
+    position: absolute;
+    border-radius: 999px;
+    background: rgba(255,255,255,.08);
+}
+.clinic-login-hero::before { width: 420px; height: 420px; top: -170px; right: -130px; }
+.clinic-login-hero::after { width: 260px; height: 260px; bottom: -100px; left: -70px; }
+.clinic-hero-content { position: relative; z-index: 1; max-width: 720px; }
+.clinic-kicker {
+    display: inline-flex;
+    align-items: center;
+    gap: .55rem;
+    padding: .45rem .8rem;
+    border: 1px solid rgba(255,255,255,.22);
+    border-radius: 999px;
+    background: rgba(255,255,255,.09);
+    font-size: .82rem;
+    font-weight: 700;
+    letter-spacing: .04em;
+    text-transform: uppercase;
+}
+.clinic-kicker::before { content: ""; width: .55rem; height: .55rem; border-radius: 50%; background: #5eead4; box-shadow: 0 0 0 .28rem rgba(94,234,212,.15); }
+.clinic-login-hero h1 { margin: 1.3rem 0 .85rem; font-size: clamp(2rem, 5vw, 4.35rem); line-height: 1.06; font-weight: 800; letter-spacing: -.04em; }
+.clinic-login-hero p { margin: 0; max-width: 610px; color: rgba(255,255,255,.84); font-size: clamp(1rem, 1.5vw, 1.18rem); line-height: 1.8; }
+.clinic-feature-list { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .8rem 1rem; margin-top: 2rem; }
+.clinic-feature { display: flex; align-items: center; gap: .65rem; font-size: .94rem; color: rgba(255,255,255,.93); }
+.clinic-feature::before { content: "✓"; display: grid; place-items: center; flex: 0 0 1.45rem; width: 1.45rem; height: 1.45rem; border-radius: 50%; color: #0f766e; background: #ccfbf1; font-weight: 900; }
+.clinic-engineer { margin-top: 2.25rem; padding-top: 1.25rem; border-top: 1px solid rgba(255,255,255,.16); color: rgba(255,255,255,.74); font-size: .86rem; }
+.clinic-engineer a { color: #fff; text-decoration: underline; text-underline-offset: 3px; }
+.clinic-login-panel { display: flex; align-items: center; justify-content: center; padding: clamp(1.1rem, 4vw, 4rem); }
+.clinic-login-card {
+    width: min(100%, 520px);
+    padding: clamp(1.4rem, 4vw, 2.7rem);
+    border: 1px solid rgba(219,228,234,.9);
+    border-radius: 1.5rem;
+    background: var(--clinic-surface);
+    box-shadow: var(--clinic-shadow);
+    backdrop-filter: blur(16px);
+}
+.clinic-login-card .oe-login-logo,
+.clinic-login-card img { max-width: min(100%, 250px); height: auto; }
+.clinic-login-card .primary-logo-container { margin-bottom: 1rem !important; }
+.clinic-login-card .form-group { margin-bottom: 1rem; }
+.clinic-login-card label { color: #334155; font-weight: 700; font-size: .9rem; }
+.clinic-login-card .form-control {
+    min-height: 46px;
+    border: 1px solid var(--clinic-border);
+    border-radius: .78rem;
+    background-color: #fff;
+    color: var(--clinic-ink);
+    box-shadow: none;
+    transition: border-color .18s ease, box-shadow .18s ease;
+}
+.clinic-login-card .form-control:focus { border-color: var(--clinic-accent); box-shadow: 0 0 0 .22rem rgba(20,184,166,.15); }
+.clinic-login-card .btn-primary {
+    min-height: 48px;
+    border: 0;
+    border-radius: .82rem;
+    background: linear-gradient(135deg, var(--clinic-primary), var(--clinic-primary-dark));
+    font-weight: 800;
+    box-shadow: 0 12px 24px rgba(15,118,110,.22);
+}
+.clinic-login-card .btn-primary:hover,
+.clinic-login-card .btn-primary:focus { background: linear-gradient(135deg, #0d9488, #0f766e); transform: translateY(-1px); }
+.clinic-login-card .alert-danger,
+.clinic-login-card .text-danger { color: #b91c1c !important; }
+.clinic-login-card a { color: var(--clinic-primary); font-weight: 650; }
+.clinic-login-title { margin: 0 0 .4rem; font-size: 1.65rem; font-weight: 850; letter-spacing: -.02em; }
+.clinic-login-subtitle { margin: 0 0 1.4rem; color: var(--clinic-muted); line-height: 1.65; }
+.clinic-privacy-note { display: flex; gap: .65rem; margin-top: 1.1rem; padding: .85rem 1rem; border-radius: .85rem; background: #f0fdfa; color: #475569; font-size: .78rem; line-height: 1.55; }
+.clinic-privacy-note strong { color: var(--clinic-primary-dark); }
+.clinic-rtl .clinic-login-card,
+html[dir="rtl"] .clinic-login-card { text-align: right; }
+html[dir="rtl"] .clinic-feature,
+html[dir="rtl"] .clinic-privacy-note { flex-direction: row-reverse; text-align: right; }
+@media (max-width: 980px) {
+    .clinic-login-shell { grid-template-columns: 1fr; }
+    .clinic-login-hero { min-height: auto; padding: 2rem 1.4rem; }
+    .clinic-login-hero h1 { font-size: 2.25rem; }
+    .clinic-feature-list { grid-template-columns: 1fr; }
+    .clinic-login-panel { padding: 1rem; }
+}
+@media (max-width: 520px) {
+    .clinic-login-hero { display: none; }
+    .clinic-login-panel { min-height: 100vh; padding: .8rem; }
+    .clinic-login-card { border-radius: 1.1rem; padding: 1.35rem 1rem; }
+}
+@media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { scroll-behavior: auto !important; transition: none !important; animation: none !important; }
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<main class="clinic-login-shell">
+    <section class="clinic-login-hero" aria-label="Platform overview">
+        <div class="clinic-hero-content">
+            <span class="clinic-kicker">Secure Clinical Workspace</span>
+            <h1>Smarter care.<br>Safer operations.</h1>
+            <p>منصة متكاملة لإدارة المرضى والمواعيد والزيارات والوصفات والمستندات والفوترة، مبنية على OpenEMR ومهيأة للتشغيل الاحترافي.</p>
+            <div class="clinic-feature-list" aria-label="Platform capabilities">
+                <div class="clinic-feature">Electronic medical records</div>
+                <div class="clinic-feature">Appointments and flowboard</div>
+                <div class="clinic-feature">Prescriptions and laboratory</div>
+                <div class="clinic-feature">Billing and reporting</div>
+                <div class="clinic-feature">Patient portal readiness</div>
+                <div class="clinic-feature">Arabic and English workflows</div>
+            </div>
+            <div class="clinic-engineer">
+                Project engineering and deployment by <strong>Engineer Hesham Talaat</strong> ·
+                <a href="/acknowledge_license_cert.html">Project information</a>
+            </div>
+        </div>
+    </section>
+
+    <section class="clinic-login-panel" aria-label="Login">
+        <div class="clinic-login-card">
+            <h2 class="clinic-login-title">تسجيل الدخول | Sign in</h2>
+            <p class="clinic-login-subtitle">استخدم حساب العمل المخصص لك. لا تشارك بيانات الدخول مع أي شخص.</p>
+            {% include "login/partials/html/primary_logo.html.twig" %}
+            {% include "login/partials/html/login_details.html.twig" %}
+            {% include "login/partials/html/acknowledgements.html.twig" %}
+            <div class="clinic-privacy-note">
+                <span aria-hidden="true">🔒</span>
+                <span><strong>Privacy:</strong> This device should be trusted and access should be limited to authorized clinical staff.</span>
+            </div>
+        </div>
+    </section>
+</main>
+{% endblock %}

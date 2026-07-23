@@ -1,0 +1,79 @@
+name: Validate production foundation
+
+on:
+  pull_request:
+  push:
+    branches: [master]
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Validate shell syntax
+        run: |
+          bash -n railway-entrypoint.sh
+          bash -n ops/production-readiness.sh
+          for script in ops/backup/*.sh; do
+            bash -n "$script"
+          done
+
+      - name: Validate JSON files
+        run: |
+          python -m json.tool railway.json >/dev/null
+          python -m json.tool customizations/pwa/manifest.webmanifest >/dev/null
+
+      - name: Validate required production files
+        run: |
+          test -s customizations/login/base.html.twig
+          test -s customizations/login/vertical_band.html.twig
+          test -s customizations/apache/security.conf
+          test -s customizations/pwa/service-worker.js
+          test -s customizations/pwa/clinic-icon.svg
+          grep -Fq 'FROM openemr/openemr:8.2.0' Dockerfile
+          grep -Fq 'healthcheckPath' railway.json
+          grep -Fq 'No protected response is cached' customizations/pwa/service-worker.js
+
+      - name: Guard deployment files against committed secrets
+        shell: python
+        run: |
+          import pathlib
+          import re
+          import sys
+
+          roots = [
+              pathlib.Path('Dockerfile'),
+              pathlib.Path('railway-entrypoint.sh'),
+              pathlib.Path('railway.json'),
+              pathlib.Path('.env.railway.example'),
+              pathlib.Path('acknowledge_license_cert.html'),
+              pathlib.Path('customizations'),
+              pathlib.Path('ops'),
+          ]
+          pattern = re.compile(
+              r'\b(?:MYSQL_PASS|MYSQL_ROOT_PASS|OE_PASS|API_KEY|SECRET_KEY)'
+              r'\s*=\s*["\'](?!\$\{|\$\{\{)([^"\']+)["\']'
+          )
+          findings = []
+          for root in roots:
+              paths = [root] if root.is_file() else root.rglob('*')
+              for path in paths:
+                  if not path.is_file() or path.suffix.lower() == '.md':
+                      continue
+                  try:
+                      text = path.read_text(encoding='utf-8')
+                  except UnicodeDecodeError:
+                      continue
+                  if pattern.search(text):
+                      findings.append(str(path))
+
+          if findings:
+              print('Potential hard-coded secret detected in deployment-owned files:')
+              print('\n'.join(sorted(set(findings))))
+              sys.exit(1)

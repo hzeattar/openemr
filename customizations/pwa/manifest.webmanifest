@@ -1,0 +1,19 @@
+{
+  "name": "OpenEMR Clinical Workspace",
+  "short_name": "OpenEMR",
+  "description": "Secure clinical and practice management workspace",
+  "start_url": "/interface/login/login.php?site=default",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#f8fafc",
+  "theme_color": "#0f766e",
+  "orientation": "any",
+  "icons": [
+    {
+      "src": "/assets/clinic/clinic-icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
