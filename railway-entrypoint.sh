@@ -9,10 +9,13 @@ SEED_DIR="/swarm-pieces/sites"
 UPSTREAM_ENTRYPOINT="${OE_ROOT}/openemr.sh"
 HTTPD_CONF="/etc/apache2/httpd.conf"
 OPENEMR_APACHE_CONF="/etc/apache2/conf.d/openemr.conf"
+RAILWAY_PORT_CONF="/etc/apache2/conf.d/railway-port.conf"
 
-# Railway healthchecks use the runtime PORT value. Bind Apache to that exact
-# port on all IPv4 interfaces instead of relying on OpenEMR's default port 80.
-configure_railway_port() {
+# Railway healthchecks use the runtime PORT value, while an existing Railway
+# public domain may still target the image's original port 80. Keep Apache on
+# port 80 and additionally bind it to Railway's injected PORT so both routes
+# reach the same OpenEMR virtual host.
+configure_railway_ports() {
   local app_port="${PORT:-80}"
 
   if [[ ! "${app_port}" =~ ^[0-9]+$ ]]; then
@@ -31,24 +34,36 @@ configure_railway_port() {
     exit 1
   fi
 
-  if grep -q '^Listen 0\.0\.0\.0:80$' "${HTTPD_CONF}"; then
-    sed -i "s/^Listen 0\.0\.0\.0:80$/Listen 0.0.0.0:${port_number}/" "${HTTPD_CONF}"
-  elif grep -q '^Listen 80$' "${HTTPD_CONF}"; then
-    sed -i "s/^Listen 80$/Listen 0.0.0.0:${port_number}/" "${HTTPD_CONF}"
-  elif ! grep -q "^Listen 0\.0\.0\.0:${port_number}$" "${HTTPD_CONF}"; then
-    echo "[railway-init] ERROR: Could not locate OpenEMR's HTTP Listen directive" >&2
+  # Normalize OpenEMR's original HTTP listener and preserve it for the public
+  # domain target port.
+  if grep -q '^Listen 80$' "${HTTPD_CONF}"; then
+    sed -i 's/^Listen 80$/Listen 0.0.0.0:80/' "${HTTPD_CONF}"
+  elif ! grep -q '^Listen 0\.0\.0\.0:80$' "${HTTPD_CONF}"; then
+    echo "[railway-init] ERROR: Could not locate OpenEMR's port 80 Listen directive" >&2
     exit 1
   fi
 
-  if grep -q '<VirtualHost \*:80>' "${OPENEMR_APACHE_CONF}"; then
-    sed -i "s#<VirtualHost \*:80>#<VirtualHost *:${port_number}>#" "${OPENEMR_APACHE_CONF}"
-  elif ! grep -q "<VirtualHost \*:${port_number}>" "${OPENEMR_APACHE_CONF}"; then
-    echo "[railway-init] ERROR: Could not locate OpenEMR's HTTP VirtualHost directive" >&2
-    exit 1
+  if (( port_number == 80 )); then
+    rm -f "${RAILWAY_PORT_CONF}"
+    if ! grep -q '<VirtualHost \*:80>' "${OPENEMR_APACHE_CONF}"; then
+      echo "[railway-init] ERROR: Could not locate OpenEMR's HTTP VirtualHost directive" >&2
+      exit 1
+    fi
+    echo "[railway-init] Apache configured to listen on 0.0.0.0:80."
+  else
+    printf 'Listen 0.0.0.0:%s\n' "${port_number}" > "${RAILWAY_PORT_CONF}"
+
+    if grep -q '<VirtualHost \*:80>' "${OPENEMR_APACHE_CONF}"; then
+      sed -i "s#<VirtualHost \*:80>#<VirtualHost *:80 *:${port_number}>#" "${OPENEMR_APACHE_CONF}"
+    elif ! grep -q "<VirtualHost \*:80 \*:${port_number}>" "${OPENEMR_APACHE_CONF}"; then
+      echo "[railway-init] ERROR: Could not configure OpenEMR's dual-port VirtualHost" >&2
+      exit 1
+    fi
+
+    echo "[railway-init] Apache configured to listen on 0.0.0.0:80 and 0.0.0.0:${port_number}."
   fi
 
   export PORT="${port_number}"
-  echo "[railway-init] Apache configured to listen on 0.0.0.0:${PORT}."
 }
 
 # Railway runs this image as a single web-service replica. OpenEMR's upstream
@@ -61,7 +76,7 @@ fi
 unset K8S
 export SWARM_MODE="no"
 
-configure_railway_port
+configure_railway_ports
 
 is_configured() {
   php -r "if (is_file('${SQLCONF_FILE}')) { require '${SQLCONF_FILE}'; echo isset(\$config) && \$config ? 1 : 0; } else { echo 0; }" \
